@@ -18,10 +18,11 @@ function PaymentScreen() {
 
     const [paymentMethod,setPaymentMethod] = useState('PayPal')
 
-    if(!shippingAddress.address){
-        history('/shipping')
-
-    }
+    if (!shippingAddress.address) {
+        history("./shipping");
+      }
+    
+    
 
     const submitHandler =(e)=>{
         e.preventDefault()

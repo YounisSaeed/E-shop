@@ -104,7 +104,7 @@ function ProductScreen() {
                                             onClick={AddToCartHandler}
                                             className='btn-block' 
                                             type='button' 
-                                            disabled={product.countInStock == 0}>
+                                            disabled={product.countinStock == 0}>
                                                 Add To Card
                                                 </Button>
                                         </Row>
