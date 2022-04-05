@@ -20,7 +20,7 @@ import {
     USER_UPDATE_PROFILE_SUCCESS
 
 } from '../constents/userConstant'
-
+import {ORDER_MY_LIST_RESET} from '../constents/orderConstant'
 import axios from 'axios'
 
 export const Login = (email,password) => async (dispatch) =>{
@@ -57,6 +57,7 @@ export const Login = (email,password) => async (dispatch) =>{
 export const logout = () => (dispatch)=>{
     dispatch({type:USER_LOGOUT})
     dispatch({type:USER_DETAILS_RESET})
+    dispatch({type:ORDER_MY_LIST_RESET})
     localStorage.removeItem('userInfo')
 }
 

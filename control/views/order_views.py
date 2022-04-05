@@ -1,10 +1,11 @@
 from datetime import datetime
+from multiprocessing import managers
 from rest_framework.decorators import api_view , permission_classes
 from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from control.models import Order , Product, OrderItem , ShippingAddress
-from control.serializer import  UserSerializer ,UserSerializerWithToken , OrderSerializer
+from control.serializer import   OrderSerializer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth.hashers import make_password
@@ -54,6 +55,16 @@ def addOrderItem(request):
 
         serializer = OrderSerializer(order , many=False)
         return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def MyOrders(request):
+    user = request.user
+    orders = user.order_set.all()
+    serilizer = OrderSerializer(orders , many=True)
+    return Response(serilizer.data)
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def getOrderById(request,pk):
@@ -73,7 +84,6 @@ def getOrderById(request,pk):
 def upate_order_paid(request,pk):
     order = Order.objects.get(_id=pk)
     order.isPaid = True
-    order.PaidAt = datetime.now()
+    order.paidAt = datetime.now()
     order.save()
-
     return Response('Order Was Paid')

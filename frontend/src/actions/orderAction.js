@@ -12,6 +12,11 @@ import {
     ORDER_PAY_REQUEST,
     ORDER_PAY_SUCCESS,
     ORDER_PAY_RESET,
+
+    ORDER_MY_LIST_FAIL,
+    ORDER_MY_LIST_REQUEST,
+    ORDER_MY_LIST_RESET,
+    ORDER_MY_LIST_SUCCESS,
 } from '../constents/orderConstant'
 import {CLEAR_CART_ITEM} from '../constents/cartConstant'
 export const CreateOrder = (order) => async (dispatch,getState) =>{
@@ -95,7 +100,7 @@ export const getPayOrder = (id,paymentresult) => async (dispatch,getState) =>{
                 Authorization: `Bearer ${userInfo.token}`,
             }
         }
-        const {data} = await axios.get(`/api/orders/${id}/pay/`,paymentresult,config) 
+        const {data} = await axios.put(`/api/orders/${id}/pay/`,paymentresult,config) 
         dispatch({
             type:ORDER_PAY_SUCCESS,
             payload:data
@@ -105,6 +110,37 @@ export const getPayOrder = (id,paymentresult) => async (dispatch,getState) =>{
     {
         dispatch({
             type:ORDER_PAY_FAIL,
+            payload: error.response && error.response.data.detail
+            ? error.response.data.detail 
+            : error.response,
+
+        })
+    }
+}
+
+export const listMyorders = () => async (dispatch,getState) =>{
+    try
+    {
+
+        dispatch({type:ORDER_MY_LIST_REQUEST})
+        const {userLogin:{userInfo},} = getState()
+        const config = {
+            headers : {
+                'Accept': 'application/json',
+                'Content-type':'application/json',
+                Authorization: `Bearer ${userInfo.token}`,
+            }
+        }
+        const {data} = await axios.get(`/api/orders/myorders/`,config) 
+        dispatch({
+            type:ORDER_MY_LIST_SUCCESS,
+            payload:data
+        })
+        
+    }catch(error)
+    {
+        dispatch({
+            type:ORDER_MY_LIST_FAIL,
             payload: error.response && error.response.data.detail
             ? error.response.data.detail 
             : error.response,
