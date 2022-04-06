@@ -6,6 +6,7 @@ import {logout} from '../actions/userAction'
 function Header() {
     const userLogin = useSelector(state=>state.userLogin)
     const {userInfo} = userLogin
+    
     const dispatch = useDispatch()
     const logoutHandler = () =>{
         dispatch(logout())
@@ -38,7 +39,23 @@ function Header() {
                     <Nav.Link ><i className='fas fa-user'>Login</i></Nav.Link>
                     </LinkContainer>
                 
-                )}</Nav>
+                )}
+                {userInfo && userInfo.isAdmin &&(
+                    <NavDropdown title='Admin' id='AdminList'>
+                    <LinkContainer to='/admin/users/'>
+                        <NavDropdown.Item>users</NavDropdown.Item>
+                    </LinkContainer>
+                    <LinkContainer to='/admin/productlist/'>
+                        <NavDropdown.Item>Products</NavDropdown.Item>
+                    </LinkContainer>
+                    <LinkContainer to='/admin/orderlist/'>
+                        <NavDropdown.Item>Orders</NavDropdown.Item>
+                    </LinkContainer>
+                    
+                </NavDropdown>
+                
+                )}
+                </Nav>
                 </Navbar.Collapse>
                 </Container>
             </Navbar>

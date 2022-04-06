@@ -72,3 +72,29 @@ def UpadateUserProfile(request):
 
     return Response(serializer.data)
 
+@api_view(['DELETE'])
+@permission_classes([IsAdminUser])
+def delete_user(request,pk):
+    userDeleted = User.objects.get(id=pk)
+    userDeleted.delete()
+    return Response(' User Was Deleted ')
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def getUserByid(request,pk):
+    user = User.objects.get(id=pk)
+    serilizer = UserSerializer(user , many=False)
+    return Response(serilizer.data)
+
+@api_view(['PUT'])
+@permission_classes([IsAdminUser])
+def UpadateUser(request,pk):
+    user = User.objects.get(id=pk)
+    data = request.data
+    user.first_name = data['name']
+    user.email = data['email']
+    user.username = data['email']
+    user.is_staff = data['isAdmin']
+    user.save()
+    serializer = UserSerializer(user,many=False)
+    return Response(serializer.data)
