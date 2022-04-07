@@ -5,10 +5,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import Loader from '../components/Loader'
 import Message from '../components/Message'
 import FormContainer from '../components/FormContainer'
-import { getUserDetails } from '../actions/userAction'
-
+import { getUserDetails, UsersUpdate } from '../actions/userAction'
+import { USER_UPDATE_RESET } from '../constents/userConstant'
 function EditUserScreen() {
-    const  match  = useParams()
+    const match = useParams()
     const userId = match.id
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
@@ -16,26 +16,39 @@ function EditUserScreen() {
 
     const dispatch = useDispatch()
 
-    const { location } = useSearchParams()
     const history = useNavigate()
 
     const userDetails = useSelector(state => state.userDetails)
     const { error, loading, user } = userDetails
 
+    const userUpdate = useSelector(state => state.userUpdate)
+    const { error: errorUpdate, loading: loadingUpdate, success: successUpdate } = userUpdate
+
     useEffect(() => {
-        if(!user.name || user._id !== Number(userId)){
-            dispatch(getUserDetails(userId))
-        }else{
-            setName(user.name)
-            setEmail(user.email)
-            setIsAdmin(user.isAdmin)
+        if (successUpdate) {
+            dispatch({ type: USER_UPDATE_RESET })
+            history('/admin/users')
+        } else {
+            if (!user.name || user._id !== Number(userId)) {
+                dispatch(getUserDetails(userId))
+
+            } else {
+                setName(user.name)
+                setEmail(user.email)
+                setIsAdmin(user.isAdmin)
+            }
+
         }
-    }, [dispatch,user])
+    }, [ userId , user , successUpdate , history ])
 
 
 
     const submitHandler = (e) => {
         e.preventDefault()
+        dispatch(UsersUpdate({
+            _id:user._id,
+            name,email,isAdmin
+        }))
 
     }
     return (
@@ -45,6 +58,8 @@ function EditUserScreen() {
             </Link>
             <FormContainer>
                 <h1> Edit User </h1>
+                {loadingUpdate && <Loader/>}
+                {errorUpdate && <Message variant='danger'>{errorUpdate}</Message>}
                 {loading ? <Loader /> : error ? <Message variant={'danger'}>{error}</Message> : (
                     <Form onSubmit={submitHandler}>
                         <Form.Group controlId='name'>

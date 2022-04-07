@@ -15,6 +15,8 @@ function UserListScreen() {
     const {userInfo} = userLogin
     const userDelete = useSelector(state=>state.userDelete)
     const {success:successDeleted}=userDelete
+    
+    
     useEffect(()=>{
         if(userInfo && userInfo.isAdmin){
             dispatch(UsersList())
@@ -22,7 +24,7 @@ function UserListScreen() {
             history('/login')
         }
 
-    },[dispatch,history,successDeleted])
+    },[dispatch,history,successDeleted,userInfo])
 
     const deleteHandler = (id) =>{
          if(window.confirm(' Are You Sure To Delete This User ')){
