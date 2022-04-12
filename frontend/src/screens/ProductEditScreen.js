@@ -7,6 +7,7 @@ import Message from '../components/Message'
 import FormContainer from '../components/FormContainer'
 import { Detailsproduct , ProductUpdate } from '../actions/productAction'
 import {PRODUCT_UPDATE_RESET} from '../constents/productConstent'
+import axios from 'axios'
 function ProductEditScreen() {
     const match = useParams()
     const productId = match.id
@@ -17,6 +18,7 @@ function ProductEditScreen() {
     const [category, setCategory] = useState('')
     const [description, setDescription] = useState('')
     const [countinStock, setCountInStock] = useState('')
+    const [uploading, setUploading] = useState(false)
     
 
     const dispatch = useDispatch()
@@ -68,6 +70,26 @@ function ProductEditScreen() {
             image,
         }))
 
+    }
+
+    const uploadfileHandler = async (e) =>{
+        const file = e.target.files[0]
+        const formData = new FormData()
+        formData.append('image',file)
+        formData.append('product_id',productId)
+        setUploading(true)
+        try{
+            const config = {
+                headers:{
+                    'Content-type':'multipart/form-data'
+                }
+            }
+            const {data} = await axios.post('/api/products/upload/',formData,config)
+            setImage(data)
+            setUploading(false)
+        }catch(error){
+            setUploading(false)
+        }
     }
     return (
         <div>
@@ -150,6 +172,15 @@ function ProductEditScreen() {
                                 value={image}
                                 onChange={(e) => setName(e.target.value)}
                             ></Form.Control>
+                            <Form.Control
+                            type='file'
+                            
+                            label='Choice Image'
+                            
+                            onChange={uploadfileHandler}
+                            >
+
+                            </Form.Control>
                         </Form.Group>
                         
                         

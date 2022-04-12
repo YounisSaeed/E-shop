@@ -3,6 +3,7 @@ from control.views import product_views as views
 
 urlpatterns = [
     path('create/',views.createProduct,name='create-product'),
+    path('upload/',views.upload_image,name='upload-image'),
     path('',views.getProducts,name='Products'),
     path('<str:pk>/',views.getProduct,name='Product'),
 
