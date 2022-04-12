@@ -16,13 +16,14 @@ from rest_framework import status
 @permission_classes([IsAdminUser])
 def update_product(request,pk):
     data = request.data
-    product = Product.objects.get(id=pk)
+    product = Product.objects.get(_id=pk)
     product.name = data['name']
     product.price = data['price']
     product.brand = data['brand']
     product.category = data['category']
-    product.description = data['description']
     product.countinStock=data['countinStock']
+    product.description = data['description']
+    
     product.save()
     serializer = ProductSerializer(product,many=False)
     return Response(serializer.data)

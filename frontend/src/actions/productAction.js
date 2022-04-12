@@ -16,6 +16,12 @@ import {
     PRODUCT_CREATE_RESET,
     PRODUCT_CREATE_SUCCESS,
 
+    
+    PRODUCT_UPDATE_FAIL,
+    PRODUCT_UPDATE_REQUEST,
+    PRODUCT_UPDATE_RESET,
+    PRODUCT_UPDATE_SUCCESS,
+
 } from '../constents/productConstent'
 import axios from 'axios'
 export const Listproduct = () => async (dispatch) =>{
@@ -114,6 +120,38 @@ export const ProductCreate = () => async (dispatch,getState) =>{
     {
         dispatch({
             type:PRODUCT_CREATE_FAIL,
+            payload: error.response && error.response.data.detail
+            ? error.response.data.detail 
+            : error.response,
+
+        })
+    }
+}
+
+
+export const ProductUpdate = (product) => async (dispatch,getState) =>{
+    try
+    {
+
+        dispatch({type:PRODUCT_UPDATE_REQUEST})
+        const {userLogin:{userInfo},} = getState()
+        const config = {
+            headers : {
+                'Accept': 'application/json',
+                'Content-type':'application/json',
+                Authorization: `Bearer ${userInfo.token}`,
+            }
+        }
+        const {data} = await axios.put(`/api/products/update/${product._id}/`,product,config) 
+        dispatch({
+            type:PRODUCT_UPDATE_SUCCESS,
+            payload:data,
+        })   
+        dispatch({type:PRODUCT_DETAILS_SUCCESS,payload:data})
+    }catch(error)
+    {
+        dispatch({
+            type:PRODUCT_UPDATE_FAIL,
             payload: error.response && error.response.data.detail
             ? error.response.data.detail 
             : error.response,

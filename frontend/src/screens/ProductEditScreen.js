@@ -5,8 +5,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import Loader from '../components/Loader'
 import Message from '../components/Message'
 import FormContainer from '../components/FormContainer'
-import { Detailsproduct } from '../actions/productAction'
-
+import { Detailsproduct , ProductUpdate } from '../actions/productAction'
+import {PRODUCT_UPDATE_RESET} from '../constents/productConstent'
 function ProductEditScreen() {
     const match = useParams()
     const productId = match.id
@@ -26,29 +26,47 @@ function ProductEditScreen() {
     const productDetails = useSelector(state => state.productDetails)
     const { error, loading, product } = productDetails
 
+    const productUpdate = useSelector(state => state.productUpdate)
+    const { error:errorUpdate, loading:loadingUpdate, success:successUpdate } = productUpdate
+
     
     useEffect(() => {
-        
+
+        if(successUpdate){
+            dispatch({type:PRODUCT_UPDATE_RESET})
+            history('/admin/productlist')
+        }else{
             if (!product.name || product._id !== Number(productId)) {
                 dispatch(Detailsproduct(productId))
 
             } else {
                 setName(product.name)
+                setPrice(product.price)
                 setBrand(product.brand)
                 setCategory(product.category)
-                setImage(product.image)
                 setCountInStock(product.countinStock)
                 setDescription(product.description)
-                setPrice(product.price)
-                
+                setImage(product.image)
             }
-    }, [ dispatch,productId , product  , history ])
+        }
+        
+            
+    }, [ dispatch,productId , product  , history , successUpdate ])
 
 
 
     const submitHandler = (e) => {
         e.preventDefault()
-        
+        dispatch(ProductUpdate({
+            _id:productId,
+            name,
+            price,
+            brand,
+            category,
+            countinStock,
+            description,
+            image,
+        }))
 
     }
     return (
@@ -58,6 +76,8 @@ function ProductEditScreen() {
             </Link>
             <FormContainer>
                 <h1> Edit product </h1>
+                {loadingUpdate && <Loader/>}
+                {errorUpdate && <Message variant='danger'>{errorUpdate}</Message>}
                 {loading ? <Loader /> : error ? <Message variant={'danger'}>{error}</Message> : (
                     <Form onSubmit={submitHandler}>
                         <Form.Group controlId='name'>
