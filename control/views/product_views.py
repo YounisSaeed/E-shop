@@ -30,7 +30,10 @@ def update_product(request,pk):
 
 @api_view(['GET'])
 def getProducts(request):
-    products = Product.objects.all()
+    query = request.query_params.get('keyword')
+    if query == None:
+        query = ''
+    products = Product.objects.filter(name__icontains=query)
     products_serializer = ProductSerializer(products , many = True)
     return Response(products_serializer.data)
 

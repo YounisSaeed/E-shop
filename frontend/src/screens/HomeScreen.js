@@ -6,15 +6,19 @@ import Message from '../components/Message'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { Listproduct } from '../actions/productAction'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 function HomeScreen() {
   const dispatch = useDispatch()
+  const history = useNavigate()
+  const location = useLocation()
   const productlist = useSelector(state => state.productList)
-
+  let keyword = location.search
+  
   const { loading , products ,error} = productlist
   useEffect(() => {
-    dispatch(Listproduct())
-  }, [dispatch])
+    dispatch(Listproduct(keyword))
+  }, [dispatch,keyword])
   return (
     <div>
       <h1>Latest Products</h1>
