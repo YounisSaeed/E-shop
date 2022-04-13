@@ -66,6 +66,14 @@ def MyOrders(request):
 
 
 @api_view(['GET'])
+@permission_classes([IsAdminUser])
+def allOrders(request):
+    orders = Order.objects.all()
+    serilizer = OrderSerializer(orders , many=True)
+    return Response(serilizer.data)
+
+
+@api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def getOrderById(request,pk):
     user = request.user
@@ -87,3 +95,12 @@ def upate_order_paid(request,pk):
     order.paidAt = datetime.now()
     order.save()
     return Response('Order Was Paid')
+
+@api_view(['PUT'])
+@permission_classes([IsAdminUser])
+def upate_order_deliver(request,pk):
+    order = Order.objects.get(_id=pk)
+    order.isDelivered = True
+    order.deliveredAt = datetime.now()
+    order.save()
+    return Response('Order Was Delivered')
