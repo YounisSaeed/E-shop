@@ -3,7 +3,7 @@ import { Col, Row } from 'react-bootstrap'
 import Product from '../components/Product'
 import Loader from '../components/Loader'
 import Message from '../components/Message'
-
+import Paginate from '../components/Paginate'
 import { useDispatch, useSelector } from 'react-redux'
 import { Listproduct } from '../actions/productAction'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -15,7 +15,7 @@ function HomeScreen() {
   const productlist = useSelector(state => state.productList)
   let keyword = location.search
   
-  const { loading , products ,error} = productlist
+  const { loading , products ,error , page , pages} = productlist
   useEffect(() => {
     dispatch(Listproduct(keyword))
   }, [dispatch,keyword])
@@ -24,7 +24,9 @@ function HomeScreen() {
       <h1>Latest Products</h1>
       { loading ? <Loader/>
       : error ? <Message variant='danger'>{error.statusText} Request failed with status  {error.status}</Message> 
-      :<Row>
+      :
+      <div>
+      <Row>
           {products.map((product) => (
             <Col sm={12} md={6} lg={4} xl={3} key={product._id}>
               <Product product={product} />
@@ -32,6 +34,8 @@ function HomeScreen() {
             </Col>
           ))}
         </Row>
+          <Paginate page={page} pages={pages} keyword={keyword}/>
+        </div>
       }
 
     </div>
