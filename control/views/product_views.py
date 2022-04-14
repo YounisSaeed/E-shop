@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view , permission_classes
 from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from rest_framework.response import Response
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
-from control.models import Product
+from control.models import Product, Review
 from control.serializer import ProductSerializer 
 
 from rest_framework import status
@@ -37,7 +37,7 @@ def getProducts(request):
     products = Product.objects.filter(name__icontains=query)
 
     page = request.query_params.get('page')
-    paginator = Paginator(products,8)
+    paginator = Paginator(products,4)
 
     try:
         products = paginator.page(page)
@@ -93,3 +93,34 @@ def upload_image(request):
     product.image = request.FILES.get('image')
     product.save()
     return Response(' image was uploaded ')
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def createProductReview(request,pk):
+    user = request.user
+    product = Product.objects.get(_id=pk)
+    data = request.data
+    already_exists = product.review_set.filter(user=user).exists()
+    if already_exists:
+        content = {'details':'Product already reviewed'}
+        return Response(content , status=status.HTTP_400_BAD_REQUEST)
+    elif data['rating']==0:
+        content = {'details':'please select a rating'}
+        return Response(content , status=status.HTTP_400_BAD_REQUEST)
+    else:
+        review = Review.objects.create(
+            user=user,
+            product=product,
+            name = user.first_name,
+            rating=data['rating'],
+            comment=data['comment'],
+
+        )
+        reviews = product.review_set.all()
+        product.numReviews = len(reviews)
+        total = 0
+        for i in reviews:
+            total += i.rating
+        product.rating = total / len(reviews)
+        product.save()
+        return Response({'detail':'Review Added'})
