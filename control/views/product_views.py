@@ -124,3 +124,10 @@ def createProductReview(request,pk):
         product.rating = total / len(reviews)
         product.save()
         return Response({'detail':'Review Added'})
+
+
+@api_view(['GET'])
+def getTopProduct(request):
+    producs = Product.objects.filter(rating__gte=4).order_by('-rating')[0:5]
+    serializer = ProductSerializer(producs,many=True)
+    return Response(serializer.data)
